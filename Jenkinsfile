@@ -29,6 +29,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
+               sshagent(['ec2-key']) {
                 sh """
                 ssh -o StrictHostKeyChecking=no ${APP_SERVER}
                 mkdir -p ${APP_DIR}
