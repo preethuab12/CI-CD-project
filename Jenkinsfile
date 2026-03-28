@@ -29,23 +29,24 @@ pipeline {
 
         stage('Deploy') {
             steps {
-               sshagent(['ec2-key']) {
-                sh """
-                ssh -o StrictHostKeyChecking=no ${APP_SERVER}
-                mkdir -p ${APP_DIR}
-                cd ${APP_DIR}
+                sshagent(['ec2-key']) {   // Jenkins credential ID
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${APP_SERVER} '
+                            mkdir -p ${APP_DIR}
+                            cd ${APP_DIR}
+                            
+                            if [ -d .git ]; then
+                                git pull origin master
+                            else
+                                git clone https://github.com/preethuab12/CI-CD-project.git .
+                            fi
 
-                if [ -d .git ]; then
-                    git pull origin master
-                else
-                    git clone https://github.com/preethuab12/CI-CD-project.git .
-                fi
-
-                ${NPM_PATH} install || true
-                pkill node || true
-                nohup ${NODE_PATH} app.js > app.log 2>&1 &
-                '
-                """
+                            ${NPM_PATH} install || true
+                            pkill node || true
+                            nohup ${NODE_PATH} app.js > app.log 2>&1 &
+                        '
+                    """
+                }
             }
         }
     }
