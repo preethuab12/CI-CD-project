@@ -28,9 +28,8 @@ pipeline {
         }
 
         stage('Deploy') {
-            steps {
-                sshagent(['ec2-key']) {   // Jenkins credential ID
-                    sh """
+            steps {    
+                   sh """
                         ssh -o StrictHostKeyChecking=no ${APP_SERVER} '
                             mkdir -p ${APP_DIR}
                             cd ${APP_DIR}
