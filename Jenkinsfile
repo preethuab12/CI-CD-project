@@ -24,7 +24,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                ssh ec2-user@15.135.223.60 "
+                ssh -o StrictHostKeyChecking=no ec2-user@15.135.223.60 "
                 cd /home/ec2-user/app || mkdir -p /home/ec2-user/app && cd /home/ec2-user/app
 
                 if [ -d .git ]; then
