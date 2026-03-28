@@ -29,13 +29,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh '''
-                ssh -o StrictHostKeyChecking=no ${APP_SERVER} << 'ENDSSH'
+                sh """
+                ssh -o StrictHostKeyChecking=no ${APP_SERVER}
                 mkdir -p ${APP_DIR}
                 cd ${APP_DIR}
 
                 if [ -d .git ]; then
-                    git pull origin main
+                    git pull origin master
                 else
                     git clone https://github.com/preethuab12/CI-CD-project.git .
                 fi
@@ -43,8 +43,8 @@ pipeline {
                 ${NPM_PATH} install || true
                 pkill node || true
                 nohup ${NODE_PATH} app.js > app.log 2>&1 &
-                ENDSSH
-                '''
+                '
+                """
             }
         }
     }
