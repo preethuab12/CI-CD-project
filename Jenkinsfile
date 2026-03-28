@@ -34,13 +34,15 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no ${APP_SERVER} '
                             mkdir -p ${APP_DIR}
                             cd ${APP_DIR}
-                            
+                           
+                            # Pull latest code 
                             if [ -d .git ]; then
                                 git pull origin master
                             else
                                 git clone https://github.com/preethuab12/CI-CD-project.git .
                             fi
 
+                            # Install dependencies
                             ${NPM_PATH} install || true
                             pkill node || true
                             nohup ${NODE_PATH} app.js > app.log 2>&1 &
