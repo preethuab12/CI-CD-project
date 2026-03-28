@@ -1,8 +1,14 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        APP_SERVER = "ec2-user@15.135.223.60"
+        APP_DIR = "/home/ec2-user/app"
+        NODE_PATH = "/usr/bin/node"
+        NPM_PATH = "/usr/bin/npm"
+    }
 
+    stages {
         stage('Checkout') {
             steps {
                 git 'https://github.com/preethuab12/CI-CD-project.git'
@@ -24,8 +30,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                ssh -o StrictHostKeyChecking=no ec2-user@15.135.223.60 "
-                cd /home/ec2-user/app || mkdir -p /home/ec2-user/app && cd /home/ec2-user/app
+                ssh -o StrictHostKeyChecking=no ${APP_SERVER} << 'ENDSSH'
+                mkdir -p ${APP_DIR}
+                cd ${APP_DIR}
 
                 if [ -d .git ]; then
                     git pull origin main
@@ -33,11 +40,11 @@ pipeline {
                     git clone https://github.com/preethuab12/CI-CD-project.git .
                 fi
 
-                npm install || true
+                ${NPM_PATH} install || true
                 pkill node || true
-                nohup node app.js > app.log 2>&1 &
-                "
-               '''
+                nohup ${NODE_PATH} app.js > app.log 2>&1 &
+                ENDSSH
+                '''
             }
         }
     }
